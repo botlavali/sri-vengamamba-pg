@@ -300,7 +300,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5500",
         "https://sri-vengamamba-pg-1.onrender.com",
-        "https://sri-vengamamba-pg.onrender.com"
+        "https://sri-vengamamba-pg.onrender.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],

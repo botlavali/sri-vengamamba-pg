@@ -4,7 +4,7 @@ requireAuth(['admin']);
 const u = getUser();
 if (u) document.getElementById('adm-name').textContent = u.name || u.email;
 document.getElementById('today-label').textContent = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-const BE = window.__APP_CONFIG__.BACKEND_URL;
+const BE = window.APP_CONFIG.API_BASE_URL;
 
 // ---------- Navigation ----------
 const sections = ['overview','residents','rent','bookings','reminders','webhooks'];
