@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>My Bookings – Sri Vengamamba PG</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="/css/style.css" rel="stylesheet" />
+</head>
+<body>
+<nav class="sv-navbar navbar navbar-expand-lg"><div class="container">
+  <a class="navbar-brand" href="/index.html"><i class="bi bi-house-heart-fill me-2"></i>Sri Vengamamba <span class="brand-dot">PG</span></a>
+  <button class="navbar-toggler text-white border-light" data-bs-toggle="collapse" data-bs-target="#nav"><i class="bi bi-list fs-3"></i></button>
+  <div class="collapse navbar-collapse" id="nav">
+    <ul class="navbar-nav me-auto">
+      <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+      <li class="nav-item"><a class="nav-link" href="/rooms.html">Rooms &amp; Beds</a></li>
+      <li class="nav-item"><a class="nav-link active" href="/my-bookings.html">My Bookings</a></li>
+    </ul>
+    <ul class="navbar-nav ms-auto" id="nav-user-area"></ul>
+  </div>
+</div></nav>
+
+<div class="container py-4">
+  <h2 class="fw-bold">My Bookings</h2>
+  <p class="text-muted">All beds you've booked at Sri Vengamamba PG</p>
+  <div id="list" data-testid="my-bookings-list">
+    <div class="text-center py-5"><div class="spinner-border"></div></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="/js/config.js"></script><script src="/js/app.js"></script>
+<script>
+const user = requireAuth();
+
+async function load() {
+  try {
+    const d = await apiFetch('/api/bookings/my');
+    const host = document.getElementById('list');
+    if (!d.items.length) {
+      host.innerHTML = `<div class="text-center py-5 text-muted">
+        <i class="bi bi-bag-x fs-1"></i>
+        <p class="mt-2">You have no bookings yet</p>
+        <a class="btn btn-sv-primary" href="/rooms.html">Browse beds</a>
+      </div>`;
+      return;
+    }
+    // Group by booking_group_id
+    const groups = {};
+    d.items.forEach(b => { (groups[b.booking_group_id] = groups[b.booking_group_id] || []).push(b); });
+    host.innerHTML = '<div class="row g-3">' + Object.entries(groups).map(([gid, beds]) => {
+      const first = beds[0];
+      const rent = beds.reduce((s, x) => s + (x.monthly_rent || 0), 0);
+      const adv = first.advance || 0;
+      const total = rent + adv;
+      const paid = first.payment_status === 'paid';
+      return `<div class="col-12"><div class="card border">
+        <div class="card-body">
+          <div class="d-flex flex-wrap justify-content-between gap-2 align-items-start">
+            <div>
+              <h5 class="mb-1">${beds.length} bed${beds.length>1?'s':''} · Booking #${gid.slice(-6)}</h5>
+              <p class="small text-muted mb-1">Booked on ${(first.created_at||'').slice(0,10)} · Join date ${escapeHTML(first.join_date||'-')}</p>
+              <div class="mb-2">
+                ${beds.map(b => `<span class="amenity-pill"><i class="bi bi-person-fill"></i>F${b.floor} · Room ${escapeHTML(b.room_number)} · Bed ${b.bed} <span class="text-muted">(${b.sharing_type}-share)</span></span>`).join('')}
+              </div>
+              <p class="small mb-0"><strong>Bed rent:</strong> ${fmtINR(rent)} + <strong>Advance:</strong> ${fmtINR(adv)} = <strong class="text-primary">${fmtINR(total)}</strong></p>
+            </div>
+            <div class="text-end">
+              <div><span class="status-pill status-${first.status}">${first.status}</span></div>
+              <div class="mt-1"><span class="status-pill status-${paid?'paid':'pending'}">${first.payment_status}</span></div>
+              <div class="mt-2">
+                ${!paid && first.status !== 'cancelled' ? `<button class="btn btn-sv-accent btn-sm" onclick="payNow('${gid}')" data-testid="pay-now-btn"><i class="bi bi-credit-card me-1"></i>Pay now</button>` : ''}
+                ${!paid && first.status !== 'cancelled' ? `<button class="btn btn-outline-danger btn-sm ms-1" onclick="cancelB('${gid}')" data-testid="cancel-btn">Cancel</button>` : ''}
+                ${paid ? `<button class="btn btn-outline-primary btn-sm" onclick="downloadReceipt('${gid}')" data-testid="download-receipt-btn"><i class="bi bi-file-earmark-pdf me-1"></i>Receipt</button>` : ''}
+              </div>
+            </div>
+          </div>
+        </div></div></div>`;
+    }).join('') + '</div>';
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function payNow(gid) {
+  try {
+    const order = await apiFetch('/api/payments/order/' + gid, { method: 'POST' });
+    const options = {
+      key: order.key_id, amount: order.amount, currency: 'INR',
+      name: 'Sri Vengamamba PG', order_id: order.order_id,
+      prefill: { name: user.name, contact: user.phone, email: user.email },
+      theme: { color: '#003580' },
+      handler: async (resp) => {
+        await apiFetch('/api/payments/verify', { method: 'POST', body: JSON.stringify({
+          booking_group_id: gid,
+          razorpay_order_id: resp.razorpay_order_id || order.order_id,
+          razorpay_payment_id: resp.razorpay_payment_id,
+          razorpay_signature: resp.razorpay_signature || 'mock',
+        })});
+        toast('Payment successful!', 'success'); load();
+      },
+    };
+    if (order.is_mock) {
+      if (!confirm(`MOCK PAYMENT\nPay ${fmtINR(order.amount/100)} ?`)) return;
+      await options.handler({ razorpay_order_id: order.order_id, razorpay_payment_id: 'pay_mock_'+Date.now(), razorpay_signature: 'mock' });
+      return;
+    }
+    new Razorpay(options).open();
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function cancelB(gid) {
+  if (!confirm('Cancel this booking?')) return;
+  try { await apiFetch('/api/bookings/group/'+gid+'/cancel', { method: 'POST' }); toast('Cancelled', 'success'); load(); }
+  catch (e) { toast(e.message, 'error'); }
+}
+
+async function downloadReceipt(gid) {
+  try {
+    const res = await fetch(api('/api/bookings/group/'+gid+'/receipt'), {
+      headers: { 'Authorization': 'Bearer ' + getToken() }
+    });
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      throw new Error(j.detail || 'Failed to download receipt');
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `SVPG_Receipt_${gid}.pdf`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+load();
+</script>
+</body></html>

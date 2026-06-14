@@ -1,0 +1,97 @@
+{
+  "theme": "light",
+  "archetype": "Archetype 1 (Organic & Earthy) blended with Archetype 5 (Luxury) - Boutique Hospitality",
+  "design_philosophy": "Reject generic tech-blue. Embrace a premium, warm, and distinctive boutique real estate feel. The UI should evoke trust, comfort, and modern living. We use an organic palette of warm creams, deep forest greens, and terracotta accents. Layouts should be spacious, typography expressive, and the bed selection grid must feel like a beautiful, tactile interactive map rather than a spreadsheet.",
+  "colors": {
+    "background_base": "#F9F6F0",
+    "surface_card": "#FFFFFF",
+    "surface_secondary": "#F3EFE6",
+    "primary": "#1A3B2B",
+    "primary_hover": "#26543D",
+    "secondary_accent": "#C85A32",
+    "secondary_hover": "#A94426",
+    "text_primary": "#111827",
+    "text_secondary": "#4B5563",
+    "text_tertiary": "#9CA3AF",
+    "border_subtle": "#E5E7EB",
+    "border_strong": "#D1D5DB",
+    "bed_states": {
+      "available_bg": "#FFFFFF",
+      "available_border": "#1A3B2B",
+      "available_text": "#1A3B2B",
+      "selected_bg": "#C85A32",
+      "selected_border": "#C85A32",
+      "selected_text": "#FFFFFF",
+      "booked_bg": "#F3F4F6",
+      "booked_border": "#E5E7EB",
+      "booked_text": "#9CA3AF"
+    }
+  },
+  "typography": {
+    "font_families": {
+      "headings": "'Outfit', sans-serif",
+      "body": "'Manrope', sans-serif"
+    },
+    "installation": "yarn add @fontsource/outfit @fontsource/manrope",
+    "hierarchy": {
+      "h1": "text-5xl md:text-6xl font-semibold tracking-tight leading-tight",
+      "h2": "text-3xl md:text-4xl font-medium tracking-tight",
+      "h3": "text-xl md:text-2xl font-medium",
+      "body": "text-base leading-relaxed text-gray-700",
+      "labels_overlines": "text-xs font-bold uppercase tracking-[0.2em] text-gray-500"
+    }
+  },
+  "spacing_and_layout": {
+    "container_padding": "px-6 md:px-12 lg:px-24",
+    "section_gap": "py-24 md:py-32",
+    "card_padding": "p-6 md:p-8",
+    "border_radius": {
+      "buttons": "rounded-full",
+      "cards": "rounded-2xl",
+      "inputs": "rounded-xl",
+      "bed_tiles": "rounded-xl"
+    },
+    "shadows": {
+      "soft_ambient": "shadow-[0_8px_30px_rgb(0,0,0,0.04)]",
+      "hover_lift": "shadow-[0_20px_40px_rgb(0,0,0,0.08)]"
+    }
+  },
+  "components": {
+    "navigation": "Sticky header, backdrop-blur-xl bg-white/80, 1px subtle bottom border (border-gray-200). Logo left, links center, CTA right.",
+    "hero_section": "Split layout or large container with slight rounded corners. The image should take up 90% of the viewport width with a subtle warm overlay.",
+    "buttons": "Primary actions use the Terracotta (#C85A32) for high conversion contrast against the green/cream theme. Secondary actions use Forest Green (#1A3B2B). Must have transform active:scale-95.",
+    "forms": "Inputs with light gray borders, focusing to Forest Green ring. Floating labels or clean top labels. Use Shadcn customized heavily.",
+    "icons": "Use lucide-react. Stroke width 1.5 for a premium, delicate look."
+  },
+  "bed_grid_spec": {
+    "concept": "The centerpiece. A vertical scroll of 6 floors. Sticky sidebar on desktop for price summary and checkout.",
+    "floor_container": "A visually distinct card (rounded-2xl, bg-white, soft shadow) per floor. Title e.g., 'Floor 1'.",
+    "room_container": "CSS Grid (grid-cols-1 md:grid-cols-2 lg:grid-cols-3). Each room is a subtle outlined box (border-gray-200) inside the floor.",
+    "bed_tile": "Interactive button. w-full py-4 px-3 flex items-center justify-between. Transitions on hover. Show bed icon + bed number. If available: outline. If selected: filled terracotta. If booked: gray filled + small text 'Occupied by [Name]'.",
+    "checkout_sidebar": "Sticky positioning. Shows total selected beds, rent calculation (2-sharing vs 3-sharing), advance deposit (₹20k), and 'Proceed to Pay' button."
+  },
+  "images": {
+    "hero_main": {
+      "url": "https://images.unsplash.com/photo-1781004672179-9790a9623a77?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTN8MHwxfHNlYXJjaHwyfHxwcmVtaXVtJTIwdHdpbiUyMGJlZCUyMHJvb218ZW58MHx8fHwxNzgxMzMzMzQyfDA&ixlib=rb-4.1.0&q=85",
+      "description": "Cozy premium bedroom with warm lighting, perfect for the hero section to establish a boutique feel."
+    },
+    "building_exterior": {
+      "url": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA2MjJ8MHwxfHNlYXJjaHwzfHxtb2Rlcm4lMjBhcGFydG1lbnQlMjBidWlsZGluZyUyMGV4dGVyaW9yfGVufDB8fHx8MTc4MTI5NjIxN3ww&ixlib=rb-4.1.0&q=85",
+      "description": "Modern apartment building exterior, use in 'About' or 'Property' section."
+    },
+    "gallery": [
+      "https://images.unsplash.com/photo-1768289269971-6171457bed13?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDB8MHwxfHNlYXJjaHw0fHxtb2Rlcm4lMjBob3N0ZWwlMjBpbnRlcmlvcnxlbnwwfHx8fDE3ODEzMzMzNDF8MA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1648383228240-6ed939727ad6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1OTN8MHwxfHNlYXJjaHwxfHxwcmVtaXVtJTIwdHdpbiUyMGJlZCUyMHJvb218ZW58MHx8fHwxNzgxMzMzMzQyfDA&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1709805619372-40de3f158e83?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDB8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjBob3N0ZWwlMjBpbnRlcmlvcnxlbnwwfHx8fDE3ODEzMzMzNDF8MA&ixlib=rb-4.1.0&q=85"
+    ]
+  },
+  "instructions_to_main_agent": [
+    "Strictly follow the color palette. No Tailwind default blues unless unavoidable for third-party scripts.",
+    "Implement the 'Warm Cream' (#F9F6F0) as the global body background, making the white cards pop beautifully.",
+    "Use framer-motion for page transitions and micro-interactions on the bed grid tiles.",
+    "Bed Grid is crucial: Ensure available beds have a clear visual affordance (hover state, pointer cursor). Selected beds must strongly contrast (Terracotta).",
+    "Booking Modal: Use a Shadcn dialog, heavily customized to remove the 'Vercel' look. Soften the borders, add the warm cream background, and use Outfit for the modal title.",
+    "Add 'data-testid' to all interactive elements (e.g., data-testid='bed-tile-floor1-room2-bed1', data-testid='checkout-button').",
+    "Admin Dashboard: Keep it functional but apply the Forest Green as the primary active state color. Remove card drop-shadows in admin, use 1px subtle borders instead for a cleaner, denser data view."
+  ]
+}

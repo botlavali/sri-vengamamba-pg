@@ -1,0 +1,203 @@
+/* ===== Admin Panel — Sidebar + Matrix design ===== */
+.admin-body {
+  background: var(--bg);
+  min-height: 100vh;
+  margin: 0; padding: 0;
+}
+
+/* ---- Sidebar ---- */
+.admin-sidebar {
+  position: fixed; left: 0; top: 0; bottom: 0;
+  width: 260px; background: var(--primary); color: #fff;
+  display: flex; flex-direction: column;
+  padding: 24px 0; z-index: 999;
+  transition: transform .2s ease;
+}
+.sidebar-brand {
+  padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,.1);
+  margin-bottom: 16px;
+}
+.sidebar-brand a {
+  color: #fff; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.4rem;
+  display: flex; align-items: baseline; gap: 8px;
+}
+.sidebar-brand i { color: var(--accent); font-size: 1.4rem; }
+.sidebar-brand small { color: rgba(255,255,255,.5); font-size: .7rem; font-weight: 500; letter-spacing: .15em; text-transform: uppercase; margin-left: 4px; }
+
+.sidebar-nav { flex: 1; padding: 0 12px; display: flex; flex-direction: column; gap: 2px; }
+.snav {
+  color: rgba(255,255,255,.7); padding: 12px 18px;
+  border-radius: 10px; font-family: 'Outfit', sans-serif; font-weight: 500;
+  font-size: .95rem; display: flex; align-items: center; gap: 14px;
+  transition: all .15s; text-decoration: none;
+}
+.snav i { font-size: 1.1rem; opacity: .8; }
+.snav:hover { background: rgba(255,255,255,.06); color: #fff; text-decoration: none; }
+.snav.active {
+  background: var(--accent); color: #fff;
+  box-shadow: 0 6px 18px rgba(200,90,50,.35);
+}
+.snav.active i { opacity: 1; }
+
+.sidebar-foot { padding: 16px 24px; border-top: 1px solid rgba(255,255,255,.1); }
+.sidebar-foot a {
+  color: rgba(255,255,255,.6); font-size: .9rem;
+  display: flex; align-items: center; gap: 10px; transition: color .15s;
+}
+.sidebar-foot a:hover { color: var(--accent); text-decoration: none; }
+
+/* ---- Main ---- */
+.admin-main { margin-left: 260px; padding: 24px 36px 48px; }
+.admin-topbar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 20px 0 28px; border-bottom: 1px solid var(--border); margin-bottom: 28px;
+}
+.admin-topbar h1 { font-size: 1.7rem; }
+.btn-icon {
+  background: none; border: 1px solid var(--border); width: 40px; height: 40px;
+  border-radius: 10px; color: var(--text); font-size: 1.3rem;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.btn-icon:hover { border-color: var(--primary); color: var(--primary); }
+
+/* Hide all sections by default; show active */
+.admin-section { display: none; }
+.admin-section.show { display: block; }
+
+/* ---- KPI cards ---- */
+.kpi-card {
+  background: var(--surface); border-radius: var(--radius-card);
+  border: 1px solid var(--border); padding: 22px;
+  display: flex; align-items: center; gap: 16px;
+  box-shadow: var(--shadow-soft); transition: all .15s;
+  height: 100%;
+}
+.kpi-card:hover { box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+.kpi-icon {
+  width: 52px; height: 52px; border-radius: 14px;
+  background: var(--surface-2); color: var(--primary);
+  font-size: 1.4rem; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.kpi-card.kpi-primary .kpi-icon { background: var(--primary); color: #fff; }
+.kpi-card.kpi-accent  .kpi-icon { background: var(--accent); color: #fff; }
+.kpi-card.kpi-warning .kpi-icon { background: #FEF3C7; color: #92400E; }
+.kpi-num {
+  font-family: 'Outfit', sans-serif; font-weight: 600;
+  font-size: 1.7rem; line-height: 1; color: var(--text);
+}
+.kpi-label { color: var(--text-2); font-size: .82rem; font-weight: 500; margin-top: 4px; }
+.text-success-soft { color: var(--primary); }
+.text-warning-strong { color: #B45309; }
+
+/* ---- Resident cards (list view of paid bookings) ---- */
+.resident-card {
+  background: var(--surface); border-radius: var(--radius-card); padding: 22px;
+  border: 1px solid var(--border); box-shadow: var(--shadow-soft);
+  display: flex; gap: 20px; align-items: flex-start; margin-bottom: 16px;
+  transition: all .15s;
+}
+.resident-card:hover { box-shadow: var(--shadow-lift); }
+.resident-photo {
+  width: 80px; height: 80px; border-radius: 16px;
+  object-fit: cover; border: 1px solid var(--border);
+  flex-shrink: 0; cursor: pointer;
+  background: var(--surface-2);
+}
+.resident-photo.placeholder {
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-3); font-size: 2rem;
+}
+.resident-info { flex: 1; min-width: 0; }
+.resident-info h5 { font-family: 'Outfit'; font-weight: 600; margin-bottom: 4px; }
+.resident-meta {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  color: var(--text-2); font-size: .85rem; margin-bottom: 10px;
+}
+.resident-meta i { color: var(--accent); margin-right: 4px; }
+.resident-beds-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.bed-chip {
+  background: var(--surface-2); color: var(--primary);
+  padding: 4px 12px; border-radius: var(--radius-pill);
+  font-size: .8rem; font-weight: 600; font-family: 'Outfit';
+}
+.resident-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---- Rent matrix ---- */
+.rent-matrix-table {
+  width: 100%; background: var(--surface); border-radius: var(--radius-card);
+  overflow: hidden; box-shadow: var(--shadow-soft); border-collapse: separate;
+  border-spacing: 0;
+}
+.rent-matrix-table thead th {
+  background: var(--surface-2); color: var(--text);
+  font-family: 'Outfit'; font-weight: 600; font-size: .85rem;
+  padding: 14px 12px; text-align: center; border-bottom: 2px solid var(--border);
+  text-transform: uppercase; letter-spacing: .1em;
+}
+.rent-matrix-table thead th:first-child { text-align: left; }
+.rent-matrix-table tbody td {
+  padding: 12px; text-align: center; border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.rent-matrix-table tbody tr:last-child td { border-bottom: none; }
+.rent-matrix-table tbody td:first-child {
+  text-align: left; font-weight: 600;
+  border-right: 1px solid var(--border); min-width: 200px;
+}
+
+.rent-cell {
+  width: 40px; height: 40px; border-radius: 10px;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: all .15s; font-size: 1.1rem;
+  font-weight: 700; border: 2px solid transparent;
+}
+.rent-cell.sm { width: 26px; height: 26px; font-size: .85rem; }
+.rent-cell.rent-paid {
+  background: rgba(26,59,43,.12); color: var(--primary); border-color: var(--primary);
+}
+.rent-cell.rent-paid::after { content: ''; }
+.rent-cell.rent-pending {
+  background: #FEF3C7; color: #92400E; border-color: #FBBF24;
+  position: relative;
+}
+.rent-cell.rent-pending.overdue { background: #FEE2E2; color: #991B1B; border-color: #EF4444; }
+.rent-cell.rent-cancelled { background: var(--surface-2); color: var(--text-3); border-color: var(--border); }
+.rent-cell:not(.sm):hover { transform: scale(1.1); box-shadow: var(--shadow-lift); }
+
+.rent-cell .reminder-dot {
+  position: absolute; top: -4px; right: -4px;
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--accent); border: 2px solid #fff;
+}
+
+/* ---- Reminders list ---- */
+.reminder-row {
+  background: var(--surface); border-radius: 14px; border: 1px solid var(--border);
+  padding: 16px 20px; margin-bottom: 10px; display: flex; align-items: center; gap: 16px;
+  transition: all .15s;
+}
+.reminder-row:hover { box-shadow: var(--shadow-soft); }
+.reminder-row .rem-icon {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--surface-2); display: flex; align-items: center; justify-content: center;
+  color: var(--accent); font-size: 1.2rem; flex-shrink: 0;
+}
+
+/* ---- Doc thumbnails (booking row) ---- */
+.doc-thumb {
+  width: 50px; height: 50px; border-radius: 10px; object-fit: cover;
+  border: 1px solid var(--border); cursor: pointer; transition: transform .15s;
+}
+.doc-thumb:hover { transform: scale(1.1); border-color: var(--primary); }
+
+/* ---- Mobile ---- */
+@media (max-width: 991px) {
+  .admin-sidebar { transform: translateX(-100%); width: 240px; }
+  .admin-sidebar.open { transform: translateX(0); box-shadow: 0 0 60px rgba(0,0,0,.3); }
+  .admin-main { margin-left: 0; padding: 16px; }
+}
+#residentSearch,
+#bookingSearch{
+    max-width:400px;
+}

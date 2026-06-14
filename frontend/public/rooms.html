@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Rooms &amp; Beds – Sri Vengamamba PG</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link href="/css/style.css" rel="stylesheet" />
+</head>
+<body>
+<nav class="sv-navbar navbar navbar-expand-lg"><div class="container">
+  <a class="navbar-brand" href="/index.html"><i class="bi bi-house-heart-fill me-2"></i>Sri Vengamamba <span class="brand-dot">PG</span></a>
+  <button class="navbar-toggler text-white border-light" data-bs-toggle="collapse" data-bs-target="#nav"><i class="bi bi-list fs-3"></i></button>
+  <div class="collapse navbar-collapse" id="nav">
+    <ul class="navbar-nav me-auto">
+      <li class="nav-item"><a class="nav-link" href="/index.html">Home</a></li>
+      <li class="nav-item"><a class="nav-link active" href="/rooms.html">Rooms &amp; Beds</a></li>
+      <li class="nav-item"><a class="nav-link" href="/my-bookings.html">My Bookings</a></li>
+    </ul>
+    <ul class="navbar-nav ms-auto" id="nav-user-area"></ul>
+  </div>
+</div></nav>
+
+<div class="rooms-page">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+      <div>
+        <h2 class="fw-bold mb-1" data-testid="rooms-page-title">🏠 S.V PG Hostel – Beds Booking</h2>
+        <p class="text-muted mb-0">Click an available <span class="text-success fw-bold">green</span> bed to select it. Max <strong>3 beds</strong> per booking.</p>
+      </div>
+      <a href="/index.html" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back to Home</a>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend" data-testid="bed-legend">
+      <div class="legend-item"><span class="legend-swatch avail"></span>Available</div>
+      <div class="legend-item"><span class="legend-swatch sel"></span>Selected (you)</div>
+      <div class="legend-item"><span class="legend-swatch booked"></span>Booked</div>
+      <div class="legend-item ms-auto small text-muted">2-bed: <strong class="text-primary">₹11,000/mo</strong> · 3-bed: <strong class="text-primary">₹9,000/mo</strong> · Advance: <strong class="text-primary">₹20,000</strong></div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Floors -->
+      <div class="col-lg-8">
+        <div id="floors-host" data-testid="floors-host">
+          <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+        </div>
+      </div>
+
+      <!-- Booking summary sidebar -->
+      <div class="col-lg-4">
+        <div class="booking-side-card" id="booking-summary" data-testid="booking-sidebar">
+          <h5 class="mb-3"><i class="bi bi-bag-check-fill text-primary me-2"></i>Your Selection</h5>
+          <div id="selected-chips" class="mb-2"><p class="text-muted small mb-0">No beds selected yet. Tap a green bed to start.</p></div>
+
+          <div id="price-summary" class="d-none mt-3">
+            <div class="summary-row"><span>Bed rent</span><strong id="sum-rent">₹0</strong></div>
+            <div class="summary-row"><span>Refundable advance</span><strong id="sum-advance">₹20,000</strong></div>
+            <div class="summary-row total"><span>Total payable</span><strong id="sum-total">₹0</strong></div>
+            <button class="btn btn-sv-accent w-100 mt-3" id="open-form-btn" data-testid="open-booking-form-btn">
+              <i class="bi bi-arrow-right-circle me-1"></i>Continue to Payment
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile sticky payment bar -->
+    <div class="mobile-sticky-bar d-lg-none d-none" id="mobile-bar" data-testid="mobile-sticky-bar">
+      <div>
+        <small class="text-muted">Total</small>
+        <div class="fw-bold" id="mb-total">₹0</div>
+      </div>
+      <button class="btn btn-sv-accent" id="mb-pay" data-testid="mobile-pay-btn">
+        <i class="bi bi-arrow-right-circle me-1"></i>Continue
+      </button>
+    </div>
+
+    <!-- Booking + payment modal -->
+    <div class="modal fade" id="bookModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Booking Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <form id="book-form" data-testid="book-form">
+              <div class="row g-3">
+                <div class="col-md-6"><label class="form-label">Full name</label>
+                  <input class="form-control" id="bk-name" required data-testid="bk-name-input"/></div>
+                <div class="col-md-6"><label class="form-label">Phone</label>
+                  <input class="form-control" id="bk-phone" required data-testid="bk-phone-input"/></div>
+                <div class="col-md-6"><label class="form-label">Alternate phone <span class="text-danger">*</span></label>
+                  <input class="form-control" id="bk-alt" required minlength="10" data-testid="bk-alt-input"/></div>
+                <div class="col-md-6"><label class="form-label">Email <span class="text-danger">*</span></label>
+                  <input type="email" class="form-control" id="bk-email" required data-testid="bk-email-input"/></div>
+                <div class="col-md-6"><label class="form-label">Aadhaar number <span class="text-danger">*</span></label>
+                  <input class="form-control" id="bk-aadhaar" required pattern="\d{12}" minlength="12" maxlength="12" placeholder="12-digit Aadhaar" data-testid="bk-aadhaar-input"/></div>
+                <div class="col-md-6"><label class="form-label">Joining date <span class="text-danger">*</span></label>
+                  <input type="date" class="form-control" id="bk-join" required data-testid="bk-join-input"/></div>
+                <div class="col-md-6"><label class="form-label">Your photo <span class="text-danger">*</span> <small class="text-muted">(jpg/png, max 5MB)</small></label>
+                  <input type="file" class="form-control" id="bk-photo" required accept=".jpg,.jpeg,.png,.webp" data-testid="bk-photo-input"/></div>
+                <div class="col-md-6"><label class="form-label">Aadhaar card <span class="text-danger">*</span> <small class="text-muted">(jpg/png/pdf, max 5MB)</small></label>
+                  <input type="file" class="form-control" id="bk-aadhaar-file" required accept=".jpg,.jpeg,.png,.webp,.pdf" data-testid="bk-aadhaar-file-input"/></div>
+                <div class="col-12"><label class="form-label">Notes (optional)</label>
+                  <textarea class="form-control" id="bk-notes" rows="2"></textarea></div>
+              </div>
+              <div class="alert alert-light border mt-3 mb-2 small" id="bk-summary"></div>
+              <div id="bk-err" class="alert alert-danger d-none"></div>
+              <button class="btn btn-sv-primary w-100" type="submit" data-testid="bk-submit-btn">
+                <i class="bi bi-credit-card me-1"></i>Pay &amp; Confirm Booking
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="/js/config.js"></script>
+<script src="/js/app.js"></script>
+<script>
+const user = requireAuth();
+if (user && !user.rules_accepted && user.role === 'guest') {
+  location.href = '/rules.html'; throw new Error('rules redirect');
+}
+
+let CFG = null;
+let BOOKED = []; // [{floor, room, bed, name}]
+let SELECTED = []; // [{floor, room, bed}]
+
+const PRICE_2 = 11000, PRICE_3 = 9000, ADVANCE = 20000, MAX_BEDS = 3;
+
+function bedsPerRoom(floor, room) {
+  return CFG.room_structure[String(floor)][room - 1];
+}
+function bedPrice(floor, room) {
+  return bedsPerRoom(floor, room) === 2 ? PRICE_2 : PRICE_3;
+}
+function isBooked(f, r, b) {
+  return BOOKED.some(x => +x.floor === +f && +x.room === +r && +x.bed === +b);
+}
+function isSelected(f, r, b) {
+  return SELECTED.some(x => x.floor === f && x.room === r && x.bed === b);
+}
+function bookedInfo(f, r, b) {
+  return BOOKED.find(x => +x.floor === +f && +x.room === +r && +x.bed === +b);
+}
+
+function renderFloors() {
+  const host = document.getElementById('floors-host');
+  host.innerHTML = Object.entries(CFG.room_structure).map(([floor, rooms]) => {
+    const activeBeds = SELECTED.filter(s => +s.floor === +floor).length;
+    return `
+      <div class="floor-block ${activeBeds ? 'active' : ''}" data-testid="floor-block-${floor}">
+        <div class="floor-head">
+          <h3><i class="bi bi-buildings me-2 text-primary"></i>Floor ${floor}</h3>
+          ${activeBeds ? `<span class="badge-count">${activeBeds} selected</span>` : ''}
+        </div>
+        <div class="rooms-grid">
+          ${rooms.map((bedCount, idx) => {
+            const room = idx + 1;
+            const rn = roomNo(floor, room);
+            const price = bedCount === 2 ? PRICE_2 : PRICE_3;
+            return `
+              <div class="room-card">
+                <div class="room-card-head">
+                  <h6>Room ${rn} <small class="text-muted">(${bedCount}-share)</small></h6>
+                  <span class="room-price">${fmtINR(price)}/bed</span>
+                </div>
+                <div class="beds-row">
+                  ${Array.from({length: bedCount}).map((_, i) => {
+                    const bed = i + 1;
+                    const booked = isBooked(floor, room, bed);
+                    const sel = isSelected(+floor, room, bed);
+                    const cls = booked ? 'booked' : sel ? 'selected' : 'available';
+                    const label = booked ? (bookedInfo(floor, room, bed)?.name || 'Booked')
+                                : sel ? `Sel ${bed}` : `Bed ${bed}`;
+                    return `<div class="bed-tile ${cls}" data-floor="${floor}" data-room="${room}" data-bed="${bed}" data-testid="bed-${floor}-${room}-${bed}" title="Room ${rn} – Bed ${bed}">
+                      <i class="bi bi-${booked?'lock-fill':'person-fill'}"></i>${escapeHTML(label)}
+                    </div>`;
+                  }).join('')}
+                </div>
+              </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  }).join('');
+
+  // Attach click handlers
+  host.querySelectorAll('.bed-tile').forEach(tile => {
+    tile.addEventListener('click', () => {
+      if (tile.classList.contains('booked')) {
+        const info = bookedInfo(tile.dataset.floor, tile.dataset.room, tile.dataset.bed);
+        toast(`🔒 Bed F${tile.dataset.floor} R${roomNo(tile.dataset.floor, tile.dataset.room)} B${tile.dataset.bed} is booked${info?.name?` by ${info.name}`:''}`, 'error');
+        return;
+      }
+      const f = +tile.dataset.floor, r = +tile.dataset.room, b = +tile.dataset.bed;
+      const i = SELECTED.findIndex(x => x.floor === f && x.room === r && x.bed === b);
+      if (i >= 0) SELECTED.splice(i, 1);
+      else {
+        if (SELECTED.length >= MAX_BEDS) { toast(`⚠️ Max ${MAX_BEDS} beds per booking`, 'error'); return; }
+        SELECTED.push({ floor: f, room: r, bed: b });
+      }
+      renderFloors();
+      renderSummary();
+    });
+  });
+}
+
+function renderSummary() {
+  const chips = document.getElementById('selected-chips');
+  const summary = document.getElementById('price-summary');
+  const mbar = document.getElementById('mobile-bar');
+  if (!SELECTED.length) {
+    chips.innerHTML = '<p class="text-muted small mb-0">No beds selected yet. Tap a green bed to start.</p>';
+    summary.classList.add('d-none');
+    if (mbar) mbar.classList.add('d-none');
+    return;
+  }
+  chips.innerHTML = SELECTED.map(s => `
+    <span class="selected-bed-chip" data-testid="selected-chip">
+      F${s.floor} · Room ${roomNo(s.floor, s.room)} · Bed ${s.bed}
+      <i class="bi bi-x-circle-fill" onclick="removeSel(${s.floor},${s.room},${s.bed})"></i>
+    </span>`).join('');
+  const rent = SELECTED.reduce((sum, s) => sum + bedPrice(s.floor, s.room), 0);
+  document.getElementById('sum-rent').textContent = fmtINR(rent);
+  document.getElementById('sum-advance').textContent = fmtINR(ADVANCE);
+  document.getElementById('sum-total').textContent = fmtINR(rent + ADVANCE);
+  summary.classList.remove('d-none');
+  if (mbar) {
+    document.getElementById('mb-total').textContent = fmtINR(rent + ADVANCE);
+    mbar.classList.remove('d-none');
+  }
+  // On first selection scroll the summary into view (only on small screens & only if user doesn't already see it)
+  const card = document.getElementById('booking-summary');
+  if (card && SELECTED.length === 1) {
+    const rect = card.getBoundingClientRect();
+    if (rect.top > window.innerHeight - 200 || rect.bottom < 0) {
+      card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+}
+
+window.removeSel = function(f, r, b) {
+  SELECTED = SELECTED.filter(x => !(x.floor === f && x.room === r && x.bed === b));
+  renderFloors(); renderSummary();
+};
+
+// Open the modal with summary
+function openBookingModal() {
+  if (!SELECTED.length) return toast('Select at least one bed', 'error');
+  const rent = SELECTED.reduce((s, x) => s + bedPrice(x.floor, x.room), 0);
+  document.getElementById('bk-summary').innerHTML = `
+    <div><strong>${SELECTED.length} bed${SELECTED.length>1?'s':''}:</strong>
+      ${SELECTED.map(s => `F${s.floor} Room ${roomNo(s.floor, s.room)} Bed ${s.bed}`).join(' · ')}</div>
+    <div class="mt-1"><strong>Bed rent:</strong> ${fmtINR(rent)} + <strong>Advance:</strong> ${fmtINR(ADVANCE)} = <strong class="text-primary">${fmtINR(rent + ADVANCE)}</strong></div>`;
+  document.getElementById('bk-name').value = user.name || '';
+  document.getElementById('bk-phone').value = user.phone || '';
+  document.getElementById('bk-email').value = user.email || '';
+  new bootstrap.Modal('#bookModal').show();
+}
+document.getElementById('open-form-btn').addEventListener('click', openBookingModal);
+document.getElementById('mb-pay')?.addEventListener('click', openBookingModal);
+
+// Submit booking + payment
+document.getElementById('book-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const err = document.getElementById('bk-err'); err.classList.add('d-none');
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Uploading…';
+  try {
+    // Upload optional files first
+    const photoFile = document.getElementById('bk-photo').files[0];
+    const aadhaarFile = document.getElementById('bk-aadhaar-file').files[0];
+    let photo_url = '', aadhaar_url = '';
+    if (photoFile) {
+      const fd = new FormData(); fd.append('file', photoFile);
+      const r = await fetch(api('/api/uploads/photo'), { method: 'POST', body: fd, headers: { 'Authorization': `Bearer ${getToken()}` } });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.detail || 'Photo upload failed');
+      photo_url = j.url;
+    }
+    if (aadhaarFile) {
+      const fd = new FormData(); fd.append('file', aadhaarFile);
+      const r = await fetch(api('/api/uploads/aadhaar'), { method: 'POST', body: fd, headers: { 'Authorization': `Bearer ${getToken()}` } });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.detail || 'Aadhaar upload failed');
+      aadhaar_url = j.url;
+    }
+
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating booking…';
+    const bk = await apiFetch('/api/bookings', { method: 'POST', body: JSON.stringify({
+      beds: SELECTED,
+      name: document.getElementById('bk-name').value,
+      phone: document.getElementById('bk-phone').value,
+      alt_phone: document.getElementById('bk-alt').value,
+      email: document.getElementById('bk-email').value,
+      aadhaar_number: document.getElementById('bk-aadhaar').value,
+      join_date: document.getElementById('bk-join').value,
+      notes: document.getElementById('bk-notes').value,
+      photo_url, aadhaar_url,
+    })});
+    await startPayment(bk);
+  } catch (e) {
+    err.textContent = e.message; err.classList.remove('d-none');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="bi bi-credit-card me-1"></i>Pay & Confirm Booking';
+  }
+});
+
+async function startPayment(bk) {
+  const order = await apiFetch('/api/payments/order/' + bk.booking_group_id, { method: 'POST' });
+  const options = {
+    key: order.key_id, amount: order.amount, currency: 'INR',
+    name: 'Sri Vengamamba PG', description: `${SELECTED.length} bed booking + advance`,
+    order_id: order.order_id,
+    prefill: { name: document.getElementById('bk-name').value, contact: document.getElementById('bk-phone').value, email: document.getElementById('bk-email').value },
+    theme: { color: '#003580' },
+    handler: async (resp) => {
+      try {
+        await apiFetch('/api/payments/verify', { method: 'POST', body: JSON.stringify({
+          booking_group_id: bk.booking_group_id,
+          razorpay_order_id: resp.razorpay_order_id || order.order_id,
+          razorpay_payment_id: resp.razorpay_payment_id,
+          razorpay_signature: resp.razorpay_signature || 'mock_signature',
+        })});
+        toast('✅ Booking confirmed!', 'success');
+        setTimeout(() => location.href = '/my-bookings.html', 800);
+      } catch (e) { toast('Payment verification failed: ' + e.message, 'error'); }
+    },
+    modal: { ondismiss: () => toast('Payment cancelled', 'error') },
+  };
+  if (order.is_mock) {
+    if (!confirm(`MOCK PAYMENT (no real Razorpay keys)\n\nPay ${fmtINR(order.amount/100)} ?`)) return;
+    await options.handler({ razorpay_order_id: order.order_id, razorpay_payment_id: 'pay_mock_'+Date.now(), razorpay_signature: 'mock' });
+    return;
+  }
+  new Razorpay(options).open();
+}
+
+// Boot
+(async function init() {
+  try {
+    CFG = await apiFetch('/api/pg/config');
+    const av = await apiFetch('/api/pg/availability');
+    BOOKED = av.booked;
+    renderFloors();
+    renderSummary();
+  } catch (e) { toast(e.message, 'error'); }
+})();
+</script>
+</body></html>

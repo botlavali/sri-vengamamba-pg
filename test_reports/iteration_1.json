@@ -1,0 +1,41 @@
+{
+  "summary": "Backend pytest (30/30 passed) covering health, PG listing/filters/detail, auth (register/login/me/google failure), bookings (create/list/error cases), mock Razorpay payments, reviews, owner CRUD with ownership 403, admin endpoints with role enforcement. Frontend e2e Playwright passed for: home featured cards, /pgs.html filters & search results, /register.html -> /dashboard.html, end-to-end booking with mock payment dialog -> booking marked 'paid' in dashboard, admin login -> /admin.html stats & tabs, owner login -> /owner.html tabs, /list-pg.html form render with default room row. CRITICAL setup bug found & fixed: serve was started with -s (single-page) flag, causing every non-index *.html page to be redirected to / and served as index.html (clean-URLs SPA fallback). All non-home frontend pages were completely inaccessible until fix.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "/pgs.html result card image", "issue": "PG card images on the search results page render as gray placeholders even though the same Unsplash URLs render fine on the home page Featured PGs section. Likely a CSS background-image / aspect ratio container issue in pg-result-card template.", "selector": "[data-testid='pg-result-card'] .card-img-top, [data-testid='pg-result-card'] [style*='background']", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/backend/tests/test_stayhive_backend.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Confirm the serve.json + removal of -s flag (committed by tester) is acceptable; otherwise pages like /pgs.html /login.html /register.html /admin.html /owner.html /dashboard.html /list-pg.html /pg-detail.html are all inaccessible (return home page content).",
+    "Investigate why /pgs.html PG result cards show gray image placeholders while the same image URLs work on home page Featured cards (CSS issue in pg-result-card template).",
+    "Optional: seed PG data has limited results for Bengaluru + price 4000-7000 filter (only 2 results). Not a bug, just FYI."
+  ],
+  "critical_code_review_comments": [
+    "Frontend serve config: package.json used 'serve -s public' which enabled cleanUrls + SPA fallback. With cleanUrls, /pgs.html was 301-redirected to /pgs and then the SPA fallback served index.html. FIXED by removing -s and adding /app/frontend/public/serve.json with {cleanUrls:false, trailingSlash:false}.",
+    "server.py: PG status auto-set to 'pending' for owner-created PGs is correct, and update_pg correctly strips 'status' field from non-admin updates (verified by tests).",
+    "Booking endpoint computes total = monthly_rent*duration_months + deposit and stores it in DB. Verified via test_booking_created.",
+    "Razorpay mock mode correctly returns is_mock=true and accepts any signature when RAZORPAY_KEY_ID == 'rzp_test_placeholder'.",
+    "CORS allow_origins=['*'] with allow_credentials=False is fine since frontend uses Bearer header (not cookies). No issue.",
+    "All endpoints serialize MongoDB ObjectId via serialize() helper - _id is correctly stripped and exposed as 'id'.",
+    "server.py is ~862 lines and would benefit from being split into routers (auth, pgs, bookings, payments, reviews, admin) for maintainability - not blocking, just hygiene."
+  ],
+  "updated_files": [
+    "/app/frontend/package.json (removed -s flag from serve start)",
+    "/app/frontend/public/serve.json (created with cleanUrls:false)",
+    "/app/backend/tests/test_stayhive_backend.py (new pytest suite)"
+  ],
+  "success_rate": {"backend": "100% (30/30)", "frontend": "~95% (all major flows pass; only PG card image rendering on /pgs.html is broken)"},
+  "test_credentials": "Admin admin@stayhive.com / Admin@123 (verified working). Owner owner@stayhive.com / Owner@123 (verified working). Guests created at runtime as e2eb_<ts>@test.com / Test@123.",
+  "seed_data_creation": "Backend lifespan auto-seeded admin, demo owner, and 6 sample PGs. Tests created additional guests and one PG (cleaned up via owner-delete) and one E2E paid booking.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "If /pgs.html or other pages return home content, check that /app/frontend/public/serve.json exists with {cleanUrls:false} and that package.json's start script does NOT include the -s flag. Backend mock payment flow: frontend dashboard.payNow() and pg-detail.book-submit use window.confirm() to simulate Razorpay; Playwright must register page.on('dialog', d => d.accept()) BEFORE clicking pay.",
+  "rca_of_critical_issue": "Root cause: The frontend was started with `serve -s public`. The `-s/--single` flag turns serve into SPA-mode (rewrites unknown paths to index.html) AND keeps cleanUrls=true which strips .html extensions via 301. Browser requested /pgs.html -> 301 /pgs -> file /pgs not found -> SPA fallback returned index.html with content-disposition: filename='index.html'. Reproduction: curl -sI <BASE>/pgs.html returned 301 to /pgs, and curl <BASE>/pgs returned home page HTML. Mitigation: removed -s flag from start script and added serve.json with cleanUrls:false, then restarted frontend via supervisor."
+}
