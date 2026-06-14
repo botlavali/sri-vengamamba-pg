@@ -299,7 +299,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5500",
-        "http://127.0.0.1:5500"
+        "https://sri-vengamamba-pg-1.onrender.com",
+        "https://sri-vengamamba-pg.onrender.com"
     ],
     allow_credentials=True,
     allow_methods=["*"],
