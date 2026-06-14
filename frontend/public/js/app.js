@@ -1,5 +1,7 @@
 // Shared utilities for Sri Vengamamba PG
-const ENV = { API_BASE: (window.__APP_CONFIG__ && window.__APP_CONFIG__.BACKEND_URL) || '' };
+const ENV = {
+  API_BASE: (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) || ''
+};
 function api(p) { return `${ENV.API_BASE}${p}`; }
 function getToken() { return localStorage.getItem('sv_token') || ''; }
 function setToken(t) { localStorage.setItem('sv_token', t); }
