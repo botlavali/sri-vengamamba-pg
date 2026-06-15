@@ -320,11 +320,3 @@ document.getElementById("bookingSearch")?.addEventListener("keyup", function () 
     });
 
 });
-const sidebar = document.getElementById("sidebar");
-const toggleBtn = document.getElementById("sidebar-toggle");
-
-if (toggleBtn) {
-  toggleBtn.addEventListener("click", () => {
-    sidebar.classList.toggle("open");
-  });
-}
