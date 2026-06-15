@@ -197,7 +197,3 @@
   .admin-sidebar.open { transform: translateX(0); box-shadow: 0 0 60px rgba(0,0,0,.3); }
   .admin-main { margin-left: 0; padding: 16px; }
 }
-#residentSearch,
-#bookingSearch{
-    max-width:400px;
-}
