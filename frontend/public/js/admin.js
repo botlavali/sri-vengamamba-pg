@@ -320,3 +320,30 @@ document.getElementById("bookingSearch")?.addEventListener("keyup", function () 
     });
 
 });
+const sidebar = document.getElementById("sidebar");
+const toggleBtn = document.getElementById("sidebar-toggle");
+
+toggleBtn?.addEventListener("click", () => {
+    sidebar.classList.toggle("open");
+});
+
+// Close sidebar when clicking outside
+document.addEventListener("click", (e) => {
+    if (
+        window.innerWidth <= 768 &&
+        sidebar.classList.contains("open") &&
+        !sidebar.contains(e.target) &&
+        !toggleBtn.contains(e.target)
+    ) {
+        sidebar.classList.remove("open");
+    }
+});
+
+// Close sidebar when menu item clicked
+document.querySelectorAll(".snav").forEach(item => {
+    item.addEventListener("click", () => {
+        if (window.innerWidth <= 768) {
+            sidebar.classList.remove("open");
+        }
+    });
+});
