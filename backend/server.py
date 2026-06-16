@@ -597,14 +597,7 @@ async def _generate_receipt_for_group(booking_group_id: str) -> Optional[str]:
         return None
 
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-pdf_path = os.path.join(
-    BASE_DIR,
-    "uploads",
-    "receipts",
-    f"{group_id}.pdf"
-)
 async def download_receipt(group_id: str, user: dict = Depends(require_user)) -> FileResponse:
     """Return the PDF receipt for a paid booking group."""
     items = await db.bookings.find({"booking_group_id": group_id}).to_list(length=None)
@@ -617,7 +610,17 @@ async def download_receipt(group_id: str, user: dict = Depends(require_user)) ->
 
     # (Re)generate if missing
     existing_url = items[0].get("receipt_url", "")
-    pdf_path = f"/app/backend/uploads/receipts/{group_id}.pdf"
+    @app.get("/api/bookings/group/{group_id}/receipt")
+    async def download_receipt(group_id: str, user: dict = Depends(require_user)) -> FileResponse:
+
+        pdf_path = os.path.join(
+            BASE_DIR,
+            "uploads",
+            "receipts",
+            f"{group_id}.pdf"
+        )
+
+    # rest of your code...
     if not existing_url or not os.path.exists(pdf_path):
         await _generate_receipt_for_group(group_id)
 
