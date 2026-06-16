@@ -291,34 +291,32 @@ const initial = (location.hash || '#overview').slice(1);
 showSection(sections.includes(initial) ? initial : 'overview');
 
 
-document.getElementById("residentSearch")?.addEventListener("keyup", function () {
+// Resident Search
+document.addEventListener("input", function(e) {
+    if (e.target.id === "residentSearch") {
+        const value = e.target.value.toLowerCase();
 
-    const value = this.value.toLowerCase();
-
-    document.querySelectorAll(".resident-card").forEach(card => {
-
-        card.style.display =
-            card.innerText.toLowerCase().includes(value)
-            ? "flex"
-            : "none";
-
-    });
-
+        document.querySelectorAll(".resident-card").forEach(card => {
+            card.style.display =
+                card.innerText.toLowerCase().includes(value)
+                    ? "flex"
+                    : "none";
+        });
+    }
 });
 
-document.getElementById("bookingSearch")?.addEventListener("keyup", function () {
+// Booking Search
+document.addEventListener("input", function(e) {
+    if (e.target.id === "bookingSearch") {
+        const value = e.target.value.toLowerCase();
 
-    const value = this.value.toLowerCase();
-
-    document.querySelectorAll("#a-bks tbody tr").forEach(row => {
-
-        row.style.display =
-            row.innerText.toLowerCase().includes(value)
-            ? ""
-            : "none";
-
-    });
-
+        document.querySelectorAll("#a-bks tbody tr").forEach(row => {
+            row.style.display =
+                row.innerText.toLowerCase().includes(value)
+                    ? ""
+                    : "none";
+        });
+    }
 });
 
 
