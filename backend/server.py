@@ -598,38 +598,54 @@ async def _generate_receipt_for_group(booking_group_id: str) -> Optional[str]:
 
 
 
-async def download_receipt(group_id: str, user: dict = Depends(require_user)) -> FileResponse:
-    """Return the PDF receipt for a paid booking group."""
-    items = await db.bookings.find({"booking_group_id": group_id}).to_list(length=None)
+@app.get("/api/bookings/group/{group_id}/receipt")
+async def download_receipt(
+    group_id: str,
+    user: dict = Depends(require_user)
+):
+    items = await db.bookings.find(
+        {"booking_group_id": group_id}
+    ).to_list(length=None)
+
     if not items:
-        raise HTTPException(status_code=404, detail="Booking not found")
-    if user["role"] != "admin" and items[0]["user_id"] != user["user_id"]:
-        raise HTTPException(status_code=403, detail="Forbidden")
-    if items[0].get("payment_status") != "paid":
-        raise HTTPException(status_code=400, detail="Payment not completed")
-
-    # (Re)generate if missing
-    existing_url = items[0].get("receipt_url", "")
-    @app.get("/api/bookings/group/{group_id}/receipt")
-    async def download_receipt(group_id: str, user: dict = Depends(require_user)) -> FileResponse:
-
-        pdf_path = os.path.join(
-            BASE_DIR,
-            "uploads",
-            "receipts",
-            f"{group_id}.pdf"
+        raise HTTPException(
+            status_code=404,
+            detail="Booking not found"
         )
 
-    # rest of your code...
-    if not existing_url or not os.path.exists(pdf_path):
+    if (
+        user["role"] != "admin"
+        and items[0]["user_id"] != user["user_id"]
+    ):
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden"
+        )
+
+    if items[0].get("payment_status") != "paid":
+        raise HTTPException(
+            status_code=400,
+            detail="Payment not completed"
+        )
+
+    pdf_path = os.path.join(
+        RECEIPTS_DIR,
+        f"{group_id}.pdf"
+    )
+
+    if not os.path.exists(pdf_path):
         await _generate_receipt_for_group(group_id)
 
     if not os.path.exists(pdf_path):
-        raise HTTPException(status_code=500, detail="Receipt generation failed")
+        raise HTTPException(
+            status_code=404,
+            detail="Receipt file not found"
+        )
+
     return FileResponse(
         pdf_path,
         media_type="application/pdf",
-        filename=f"SVPG_Receipt_{group_id}.pdf",
+        filename=f"SVPG_Receipt_{group_id}.pdf"
     )
 
 
