@@ -387,3 +387,20 @@ textarea.form-control { height: auto; padding: 12px 14px; }
   border: 1px solid var(--border); cursor: pointer; transition: transform .15s;
 }
 .doc-thumb:hover { transform: scale(1.05); box-shadow: var(--shadow-soft); }
+.navbar-toggler {
+    color: #000 !important;
+    border-color: #000 !important;
+}
+
+.navbar-toggler i {
+    color: #000 !important;
+}
+.navbar-toggler {
+    background: transparent !important;
+    border: 2px solid #000 !important;
+}
+
+.navbar-toggler .bi-list {
+    color: #000 !important;
+    font-size: 30px;
+}
