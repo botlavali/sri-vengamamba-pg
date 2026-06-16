@@ -24,6 +24,14 @@
 
 <div class="container py-4">
   <h2 class="fw-bold">My Bookings</h2>
+  <div class="mb-4">
+    <input
+        type="text"
+        id="myBookingSearch"
+        class="form-control"
+        placeholder="Search by Room, Bed, Booking ID..."
+    >
+</div>
   <p class="text-muted">All beds you've booked at Sri Vengamamba PG</p>
   <div id="list" data-testid="my-bookings-list">
     <div class="text-center py-5"><div class="spinner-border"></div></div>
@@ -135,5 +143,21 @@ async function downloadReceipt(gid) {
 }
 
 load();
+
+document.getElementById('myBookingSearch').addEventListener('input', function() {
+
+    const value = this.value.toLowerCase();
+
+    document.querySelectorAll('#list .card').forEach(card => {
+
+        if(card.innerText.toLowerCase().includes(value)){
+            card.parentElement.style.display = '';
+        } else {
+            card.parentElement.style.display = 'none';
+        }
+
+    });
+
+});
 </script>
 </body></html>
