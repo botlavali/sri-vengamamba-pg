@@ -49,6 +49,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 UPLOAD_DIR = os.path.join(BASE_DIR, "uploads")  
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+RECEIPTS_DIR = os.path.join(UPLOAD_DIR, "receipts")
+os.makedirs(RECEIPTS_DIR, exist_ok=True)
+
 # ---------- Single Property (from GitHub repo) ----------
 PG_CONFIG: Dict[str, Any] = {
     "name": "Sri Vengamamba PG",
@@ -594,7 +597,14 @@ async def _generate_receipt_for_group(booking_group_id: str) -> Optional[str]:
         return None
 
 
-@app.get("/api/bookings/group/{group_id}/receipt")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+pdf_path = os.path.join(
+    BASE_DIR,
+    "uploads",
+    "receipts",
+    f"{group_id}.pdf"
+)
 async def download_receipt(group_id: str, user: dict = Depends(require_user)) -> FileResponse:
     """Return the PDF receipt for a paid booking group."""
     items = await db.bookings.find({"booking_group_id": group_id}).to_list(length=None)
