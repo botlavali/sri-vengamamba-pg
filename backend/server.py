@@ -298,10 +298,10 @@ app = FastAPI(lifespan=lifespan, title="Sri Vengamamba PG API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5500",
-        "https://sri-vengamamba-pg-1.onrender.com",
-        "https://sri-vengamamba-pg.onrender.com",
-    ],
+    "http://localhost:5500",
+    "https://sri-vengamamba-pg.vercel.app",
+    "https://sri-vengamamba-pg.onrender.com",
+],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
