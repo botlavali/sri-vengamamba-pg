@@ -319,42 +319,45 @@ document.addEventListener("input", function(e) {
     }
 });
 
+document.addEventListener("DOMContentLoaded", () => {
 
+    const sidebar = document.getElementById("sidebar");
+    const toggle = document.getElementById("sidebar-toggle");
 
-const sidebar = document.getElementById("sidebar");
-const toggleBtn = document.getElementById("sidebar-toggle");
+    if (!sidebar || !toggle) return;
 
-// Open / Close sidebar
-if (toggleBtn) {
-    toggleBtn.addEventListener("click", function (e) {
+    toggle.onclick = function(e){
+        e.preventDefault();
         e.stopPropagation();
         sidebar.classList.toggle("open");
+    };
+
+    document.addEventListener("click", function(e){
+
+        if(window.innerWidth <= 991){
+
+            if(
+                !sidebar.contains(e.target) &&
+                !toggle.contains(e.target)
+            ){
+                sidebar.classList.remove("open");
+            }
+
+        }
+
     });
-}
 
-// Close when clicking outside
-document.addEventListener("click", function (e) {
+    document.querySelectorAll(".snav").forEach(item=>{
 
-    if (
-        window.innerWidth <= 1200 &&
-        sidebar.classList.contains("open") &&
-        !sidebar.contains(e.target) &&
-        !toggleBtn.contains(e.target)
-    ) {
-        sidebar.classList.remove("open");
-    }
+        item.onclick=function(){
 
-});
+            if(window.innerWidth<=991){
+                sidebar.classList.remove("open");
+            }
 
-// Close after clicking menu
-document.querySelectorAll(".snav").forEach(link => {
-
-    link.addEventListener("click", function () {
-
-        if (window.innerWidth <= 1200) {
-            sidebar.classList.remove("open");
         }
 
     });
 
 });
+
