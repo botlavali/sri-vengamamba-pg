@@ -11,7 +11,7 @@
   width: 260px; background: var(--primary); color: #fff;
   display: flex; flex-direction: column;
   padding: 24px 0; z-index: 999;
-  transition: transform .2s ease;
+  transition: left .3s ease;
 }
 .sidebar-brand {
   padding: 0 24px 24px; border-bottom: 1px solid rgba(255,255,255,.1);
@@ -191,31 +191,85 @@
 }
 .doc-thumb:hover { transform: scale(1.1); border-color: var(--primary); }
 
-/* ---- Mobile ---- */
-@media (max-width: 991px) {
-  .admin-sidebar { transform: translateX(-100%); width: 240px; }
-  .admin-sidebar.open { transform: translateX(0); box-shadow: 0 0 60px rgba(0,0,0,.3); }
-  .admin-main { margin-left: 0; padding: 16px; }
+
+
+/* ===========================
+   Responsive Admin Panel
+=========================== */
+
+/* Desktop */
+@media (min-width:992px){
+
+    .admin-sidebar{
+        position:fixed;
+        left:0;
+        top:0;
+        width:260px;
+        height:100vh;
+    }
+
+    .admin-main{
+        margin-left:260px;
+        width:calc(100% - 260px);
+    }
+
+    #sidebar-toggle{
+        display:none;
+    }
 }
-@media (max-width: 768px) {
 
-  .admin-sidebar {
-    position: fixed;
-    top: 0;
-    left: -260px;
-    width: 260px;
-    height: 100vh;
-    z-index: 9999;
-    transition: left 0.3s ease;
-  }
 
-  .admin-sidebar.open {
-    left: 0;
-  }
+/* Tablet & Mobile */
+@media (max-width:991px){
 
-  .admin-main {
-    margin-left: 0 !important;
-    width: 100%;
-    padding: 15px;
-  }
+    .admin-sidebar{
+        position:fixed;
+        top:0;
+        left:-260px;
+        width:260px;
+        height:100vh;
+        background:var(--primary);
+        z-index:9999;
+        transition:left .3s ease;
+    }
+
+    .admin-sidebar.open{
+        left:0;
+    }
+
+    .admin-main{
+        margin-left:0;
+        width:100%;
+        padding:15px;
+    }
+
+    #sidebar-toggle{
+        display:block;
+    }
+
+    .kpi-card{
+        margin-bottom:15px;
+    }
+
+    .resident-card{
+        flex-direction:column;
+        gap:15px;
+    }
+
+    .resident-photo{
+        width:70px;
+        height:70px;
+    }
+
+    .rent-matrix-table{
+        display:block;
+        overflow-x:auto;
+    }
+
+    .rent-matrix-table table,
+    table{
+        min-width:900px;
+    }
 }
+
+
