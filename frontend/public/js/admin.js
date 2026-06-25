@@ -320,27 +320,41 @@ document.addEventListener("input", function(e) {
 });
 
 
+
 const sidebar = document.getElementById("sidebar");
 const toggleBtn = document.getElementById("sidebar-toggle");
 
-// Close sidebar when clicking outside
-document.addEventListener("click", (e) => {
+// Open / Close sidebar
+if (toggleBtn) {
+    toggleBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        sidebar.classList.toggle("open");
+    });
+}
+
+// Close when clicking outside
+document.addEventListener("click", function (e) {
+
     if (
-        window.innerWidth <= 768 &&
-        sidebar &&
+        window.innerWidth <= 1200 &&
         sidebar.classList.contains("open") &&
         !sidebar.contains(e.target) &&
         !toggleBtn.contains(e.target)
     ) {
         sidebar.classList.remove("open");
     }
+
 });
 
-// Close sidebar when menu item clicked
-document.querySelectorAll(".snav").forEach(item => {
-    item.addEventListener("click", () => {
-        if (window.innerWidth <= 768 && sidebar) {
+// Close after clicking menu
+document.querySelectorAll(".snav").forEach(link => {
+
+    link.addEventListener("click", function () {
+
+        if (window.innerWidth <= 1200) {
             sidebar.classList.remove("open");
         }
+
     });
+
 });
