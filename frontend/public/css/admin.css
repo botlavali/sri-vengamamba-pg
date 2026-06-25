@@ -496,7 +496,7 @@
   }
 
   #sidebar-toggle {
-    display: block;
+    display: none;
   }
 
   @media (min-width:1201px) {
@@ -525,15 +525,15 @@
     left: 0;
   }
 
-  .admin-sidebar.open::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 260px;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, .45);
-  }
+  .sidebar-overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,.45);
+    z-index:9998;
+}
 
   .admin-main {
     margin-left: 0 !important;

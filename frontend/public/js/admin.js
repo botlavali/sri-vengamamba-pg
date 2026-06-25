@@ -23,9 +23,7 @@ function showSection(name) {
 document.querySelectorAll('.snav').forEach(a => {
   a.addEventListener('click', e => { e.preventDefault(); showSection(a.dataset.section); });
 });
-document.getElementById('sidebar-toggle')?.addEventListener('click', () => {
-  document.getElementById('sidebar').classList.toggle('open');
-});
+
 
 // ---------- Loaders ----------
 loaders.overview = stats;
@@ -319,43 +317,38 @@ document.addEventListener("input", function(e) {
     }
 });
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function () {
 
     const sidebar = document.getElementById("sidebar");
     const toggle = document.getElementById("sidebar-toggle");
 
-    if (!sidebar || !toggle) return;
-
-    toggle.onclick = function(e){
-        e.preventDefault();
+    toggle.addEventListener("click", function (e) {
         e.stopPropagation();
         sidebar.classList.toggle("open");
-    };
+    });
 
-    document.addEventListener("click", function(e){
+    document.addEventListener("click", function (e) {
 
-        if(window.innerWidth <= 991){
-
-            if(
-                !sidebar.contains(e.target) &&
-                !toggle.contains(e.target)
-            ){
-                sidebar.classList.remove("open");
-            }
-
+        if (
+            window.innerWidth <= 991 &&
+            sidebar.classList.contains("open") &&
+            !sidebar.contains(e.target) &&
+            !toggle.contains(e.target)
+        ) {
+            sidebar.classList.remove("open");
         }
 
     });
 
-    document.querySelectorAll(".snav").forEach(item=>{
+    document.querySelectorAll(".snav").forEach(link => {
 
-        item.onclick=function(){
+        link.addEventListener("click", function () {
 
-            if(window.innerWidth<=991){
+            if (window.innerWidth <= 991) {
                 sidebar.classList.remove("open");
             }
 
-        }
+        });
 
     });
 
