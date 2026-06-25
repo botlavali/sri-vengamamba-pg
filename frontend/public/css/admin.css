@@ -510,31 +510,41 @@
 
 
 /* Tablet & Mobile */
-@media (max-width:1200px) {
+@media (max-width:991px) {
 
   .admin-sidebar {
     position: fixed;
     top: 0;
     left: -260px;
+    bottom: 0;
     width: 260px;
-    height: 100vh;
-    background: var(--primary);
-    z-index: 9999;
-    transition: left .3s ease;
+    overflow-y: auto;
   }
 
   .admin-sidebar.open {
     left: 0;
   }
 
+  .admin-sidebar.open::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 260px;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, .45);
+  }
+
   .admin-main {
-    margin-left: 0;
+    margin-left: 0 !important;
     width: 100%;
     padding: 15px;
   }
 
   #sidebar-toggle {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .kpi-card {
