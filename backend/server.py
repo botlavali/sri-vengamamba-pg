@@ -59,7 +59,7 @@ PG_CONFIG: Dict[str, Any] = {
     "owner": "Mohan",
     "phone": "+91 9515943563",
     "email": "mohanaraob1993@gmail.com",
-    "address": "Sri Vengamamba PG, Bengaluru",
+    "address": "SV PG for Gents, Bengaluru",
     "city": "Bengaluru",
     "gender": "Gents only",
     "confirmation_code": "MOHANSVPG",
@@ -75,8 +75,8 @@ PG_CONFIG: Dict[str, Any] = {
     },
 
     # Pricing — straight from repo
-    "price_2sharing": 11000,
-    "price_3sharing": 9000,
+    "price_2sharing": 12000,
+    "price_3sharing": 10000,
     "advance": 20000,
     "max_beds_per_booking": 3,
 
@@ -296,13 +296,13 @@ async def lifespan(app: FastAPI):
             pass
 
 
-app = FastAPI(lifespan=lifespan, title="Sri Vengamamba PG API")
+app = FastAPI(lifespan=lifespan, title="SV PG for Gents API")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
     "http://localhost:5500",
-    "https://sri-vengamamba-pg.vercel.app",
+    "https://sv-pg-for-gents.vercel.app",
     "https://sri-vengamamba-pg.onrender.com",
 ],
     allow_credentials=True,
@@ -803,7 +803,7 @@ def _send_email_via_sendgrid(to_email: str, subject: str, body_html: str) -> dic
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
             json={
                 "personalizations": [{"to": [{"email": to_email}], "subject": subject}],
-                "from": {"email": from_email, "name": "Sri Vengamamba PG"},
+                "from": {"email": from_email, "name": "SV PG for Gents"},
                 "content": [{"type": "text/html", "value": body_html}],
             },
             timeout=10,
@@ -821,13 +821,13 @@ def _build_reminder_html(rent: dict) -> str:
         f"<p>This is a friendly reminder that your rent of <b>INR {rent.get('amount',0):,}</b> "
         f"for the month <b>{rent['month']}</b> is pending.</p>"
         f"<p>Please pay at the earliest to avoid late charges. Thank you.</p>"
-        f"<p>– Sri Vengamamba PG Management</p>"
+        f"<p>– SV PG for Gents Management</p>"
     )
 
 
 async def _send_reminder_for_rent(rent: dict, triggered_by: str = "auto-cron") -> dict:
     """Helper to send + log a reminder for one rent row. Returns send_result."""
-    subject = f"Rent reminder – {rent['month']} – Sri Vengamamba PG"
+    subject = f"Rent reminder – {rent['month']} – SV PG for Gents"
     body = _build_reminder_html(rent)
     send_result = _send_email_via_sendgrid(rent.get("email", ""), subject, body)
     await db.reminders.insert_one({
