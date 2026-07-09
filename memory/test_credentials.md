@@ -7,11 +7,11 @@
 - Dashboard: `/admin.html`
 
 ## Demo bookings (already seeded, will show as RED on bed grid)
-- Floor 1 Room 101 Bed 1 — Ramesh (2-share, ₹11,000)
-- Floor 1 Room 103 Bed 2 — Suresh (3-share, ₹9,000)
-- Floor 2 Room 204 Bed 1 — Vijay (3-share, ₹9,000)
-- Floor 3 Room 302 Bed 1 — Kumar (2-share, ₹11,000)
-- Floor 6 Room 601 Bed 1 — Anil (2-share, ₹11,000)
+- Floor 1 Room 101 Bed 1 — Ramesh (2-share, ₹12,000)
+- Floor 1 Room 103 Bed 2 — Suresh (3-share, ₹10,000)
+- Floor 2 Room 204 Bed 1 — Vijay (3-share, ₹10,000)
+- Floor 3 Room 302 Bed 1 — Kumar (2-share, ₹12,000)
+- Floor 6 Room 601 Bed 1 — Anil (2-share, ₹12,000)
 
 ## To test booking flow (create a guest)
 1. Go to `/register.html` → create account
