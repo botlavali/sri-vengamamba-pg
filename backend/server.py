@@ -1,4 +1,4 @@
-"""Sri Vengamamba PG (S.V PG Hostel — Gents) – Single-Property Booking Backend
+"""SV PG for Gents (S.V PG Hostel — Gents) – Single-Property Booking Backend
 FastAPI + MongoDB. Bed-level booking with floors, rooms and Razorpay payment.
 """
 from dotenv import load_dotenv
@@ -54,7 +54,7 @@ os.makedirs(RECEIPTS_DIR, exist_ok=True)
 
 # ---------- Single Property (from GitHub repo) ----------
 PG_CONFIG: Dict[str, Any] = {
-    "name": "Sri Vengamamba PG",
+    "name": "SV PG for Gents",
     "tagline": "S.V PG Hostel — Gents",
     "owner": "Mohan",
     "phone": "+91 9515943563",

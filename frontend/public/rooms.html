@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Rooms &amp; Beds – Sri Vengamamba PG</title>
+<title>Rooms &amp; Beds – SV PG for Gents</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -135,7 +135,7 @@ let CFG = null;
 let BOOKED = []; // [{floor, room, bed, name}]
 let SELECTED = []; // [{floor, room, bed}]
 
-const PRICE_2 = 11000, PRICE_3 = 9000, ADVANCE = 20000, MAX_BEDS = 3;
+const PRICE_2 = 12000, PRICE_3 = 10000, ADVANCE = 20000, MAX_BEDS = 3;
 
 function bedsPerRoom(floor, room) {
   return CFG.room_structure[String(floor)][room - 1];
@@ -321,7 +321,7 @@ async function startPayment(bk) {
   const order = await apiFetch('/api/payments/order/' + bk.booking_group_id, { method: 'POST' });
   const options = {
     key: order.key_id, amount: order.amount, currency: 'INR',
-    name: 'Sri Vengamamba PG', description: `${SELECTED.length} bed booking + advance`,
+    name: 'SV PG for Gents', description: `${SELECTED.length} bed booking + advance`,
     order_id: order.order_id,
     prefill: { name: document.getElementById('bk-name').value, contact: document.getElementById('bk-phone').value, email: document.getElementById('bk-email').value },
     theme: { color: '#003580' },

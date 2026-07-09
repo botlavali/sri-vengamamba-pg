@@ -107,7 +107,7 @@ def _build_header(pg: dict, styles) -> List[Flowable]:
     h2 = styles["Heading2"]
     h2.textColor = _BRAND_GREEN
     return [
-        Paragraph(f"<b>{pg.get('name', 'Sri Vengamamba PG')}</b>", h1),
+        Paragraph(f"<b>{pg.get('name', 'SV PG for Gents')}</b>", h1),
         Paragraph(pg.get("tagline", "S.V PG Hostel – Gents"), styles["Italic"]),
         Paragraph(pg.get("address", ""), styles["Normal"]),
         Paragraph(f"Phone: {pg.get('phone','')} · Email: {pg.get('email','')}", styles["Normal"]),

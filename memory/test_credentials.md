@@ -1,4 +1,4 @@
-# Sri Vengamamba PG — Test Credentials
+# SV PG for Gents — Test Credentials
 
 ## Admin
 - Email: `admin@svpg.com`
