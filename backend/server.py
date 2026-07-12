@@ -27,6 +27,8 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel, EmailStr, Field
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
+from routes import expenditure
+
 
 from utils import save_uploaded_file, generate_receipt, ALLOWED_IMG, ALLOWED_DOC
 
@@ -119,6 +121,7 @@ PG_CONFIG: Dict[str, Any] = {
 # ---------- Setup ----------
 mongo_client = AsyncIOMotorClient(MONGO_URL)
 db = mongo_client[DB_NAME]
+expenditure.expenditures_collection = db["expenditures"]
 
 razorpay_client: Optional[razorpay.Client] = None
 if not IS_PLACEHOLDER_RZP:
@@ -297,6 +300,10 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan, title="SV PG for Gents API")
+app.include_router(expenditure.router)
+
+
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -309,6 +316,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Serve uploaded files
 from fastapi.staticfiles import StaticFiles
@@ -931,23 +939,51 @@ async def admin_stats(user: dict = Depends(require_admin)) -> dict:
     async for r in rent_pending_cursor:
         rent_pending_amount = r.get("total", 0)
 
+    
+    total_income = revenue["total_rent"] + revenue["advance"]
+
+    expense_cursor = db["expenditures"].aggregate([
+        {
+            "$group": {
+                "_id": None,
+                "total": {"$sum": "$amount"}
+            }
+        }
+    ])
+
+    total_expense = 0
+
+    async for item in expense_cursor:
+        total_expense = item["total"]
+
+    profit = total_income - total_expense
+
     return {
+        "total_income": total_income,
+        "total_expense": total_expense,
+        "profit": profit,
+
         "total_beds": total_beds,
         "booked_beds": booked,
         "available_beds": total_beds - booked,
         "occupancy_pct": round(booked * 100 / total_beds, 1) if total_beds else 0,
+
         "users": await db.users.count_documents({}),
         "guests": await db.users.count_documents({"role": "guest"}),
+
         "paid_bookings": paid_bookings,
         "pending_bookings": await db.bookings.count_documents({"status": "pending"}),
+
         "revenue_rent": revenue["total_rent"],
         "revenue_advance": revenue["advance"],
+
         "current_month": current_month,
         "rent_paid_count": rent_paid,
         "rent_pending_count": rent_pending,
         "rent_collected_month": rent_collected_month,
-        "rent_pending_amount": rent_pending_amount,
+        "rent_pending_amount": rent_pending_amount
     }
+
 
 
 @app.get("/api/admin/bookings")
@@ -1153,3 +1189,109 @@ async def admin_checkout(group_id: str, user: dict = Depends(require_admin)) -> 
         {"$set": {"status": "cancelled", "cancelled_at": now}},
     )
     return {"ok": True, "checked_out_beds": len(items)}
+
+@app.get("/api/admin/monthly-chart")
+async def monthly_chart(user: dict = Depends(require_admin)):
+
+    months = ["Jan","Feb","Mar","Apr","May","Jun",
+              "Jul","Aug","Sep","Oct","Nov","Dec"]
+
+    income = [0] * 12
+    expense = [0] * 12
+    bookings = [0] * 12
+
+    # ---------------- Income ----------------
+    async for booking in db.bookings.find({"payment_status": "paid"}):
+
+        if booking.get("created_at"):
+
+            d = booking["created_at"]
+
+            if isinstance(d, str):
+                d = datetime.fromisoformat(d)
+
+            month = d.month - 1
+
+            bookings[month] += 1
+
+            income[month] += booking.get("monthly_rent", 0)
+            income[month] += booking.get("advance", 0)
+
+    # ---------------- Expense ----------------
+    async for exp in db.expenditures.find():
+
+        if exp.get("date"):
+
+            d = exp["date"]
+
+            if isinstance(d, str):
+                d = datetime.fromisoformat(d)
+
+            month = d.month - 1
+
+            expense[month] += exp.get("price", 0)
+
+    # ---------------- Top Expenses ----------------
+    expense_pipeline = [
+        {
+            "$group": {
+                "_id": "$productName",
+                "total": {
+                    "$sum": "$price"
+                }
+            }
+        },
+        {
+            "$sort": {
+                "total": -1
+            }
+        },
+        {
+            "$limit": 10
+        }
+    ]
+
+# ---------------- Top Expenses ----------------
+
+    expense_labels = []
+    expense_values = []
+
+    async for item in db.expenditures.aggregate(expense_pipeline):
+        expense_labels.append(item["_id"])
+        expense_values.append(item["total"])
+
+# ---------------- Profit / Loss ----------------
+
+    profit = []
+    loss = []
+
+    for i in range(12):
+
+        p = income[i] - expense[i]
+
+        if p >= 0:
+            profit.append(p)
+            loss.append(0)
+        else:
+            profit.append(0)
+            loss.append(abs(p))
+
+    print("Income:", income)
+    print("Expense:", expense)
+    print("Profit:", profit)
+    print("Loss:", loss)
+    print("Profit Length:", len(profit))
+    print("Loss Length:", len(loss))
+
+# ---------------- Return ----------------
+
+    return {
+        "months": months,
+        "income": income,
+        "expense": expense,
+        "profit": profit,
+        "loss": loss,
+        "bookings": bookings,
+        "expense_labels": expense_labels,
+        "expense_values": expense_values
+}

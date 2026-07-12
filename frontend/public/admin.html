@@ -30,6 +30,10 @@
           class="bi bi-bell-fill"></i>Reminders</a>
       <a href="#webhooks" class="snav" data-section="webhooks" data-testid="snav-webhooks"><i
           class="bi bi-broadcast"></i>Webhooks</a>
+      <a href="#expenditure" class="snav" data-section="expenditure">
+        <i class="bi bi-wallet2"></i>
+        Expenditures
+      </a>
     </nav>
     <div class="sidebar-foot">
       <a href="#" onclick="logout();return false;" data-testid="snav-logout"><i
@@ -258,8 +262,221 @@
       </div>
       <div id="a-hooks" data-testid="admin-webhooks-list"></div>
     </section>
+    <section class="admin-section" id="sec-expenditure">
+
+      <div class="page-header">
+        <div class="row g-3 mb-4">
+
+          <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center">
+              <div class="card-body">
+                <h6>Total Income</h6>
+                <h3 id="totalIncome">₹0</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center">
+              <div class="card-body">
+                <h6>Total Expenses</h6>
+                <h3 id="totalExpense">₹0</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center">
+              <div class="card-body">
+                <h6>Profit</h6>
+                <h3 id="totalProfit">₹0</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="card shadow-sm border-0 text-center">
+              <div class="card-body">
+                <h6>This Month Expense</h6>
+                <h3 id="monthExpense">₹0</h3>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <h3>Expenditure Management</h3>
+        <p>Add and manage hostel expenses.</p>
+      </div>
+
+      <div class="d-flex gap-2 mb-4">
+
+        <button class="btn btn-sv-primary" id="btn-add-expense">
+          <i class="bi bi-plus-circle"></i>
+          Add Expenditure
+        </button>
+
+        <button class="btn btn-outline-secondary" id="btn-expense-report">
+          <i class="bi bi-bar-chart"></i>
+          Reports
+        </button>
+
+      </div>
+
+      <div id="expense-form-card" style="display:none;"></div>
+      <div class="mb-3">
+        <input type="text" id="expenseSearch" class="form-control" placeholder="Search Product...">
+      </div>
+      <div id="expense-table"></div>
+
+
+    </section>
+    <section id="page-report" class="page" style="display:none;">
+
+      <h2 class="mb-4">📊 Reports Dashboard</h2>
+      <button class="btn btn-secondary mb-3" onclick="backToExpense()">
+        ← Back
+      </button>
+
+      <div class="row">
+
+        <div class="col-md-4">
+          <div class="card shadow p-3 mb-3 report-summary-card">
+            <h6>Total Income</h6>
+            <h3 id="reportIncome">₹0</h3>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card shadow p-3 mb-3 report-summary-card">
+            <h6>Total Expense</h6>
+            <h3 id="reportExpense">₹0</h3>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card shadow p-3 mb-3 report-summary-card">
+            <h6>Profit</h6>
+            <h3 id="reportProfit">₹0</h3>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card shadow p-3 mb-3 report-summary-card">
+            <h6>Total Loss</h6>
+            <h3 id="reportLoss">₹0</h3>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div class="col-md-6">
+          <div class="card p-3 mb-4 report-chart-card">
+            <h5>Income vs Expense</h5>
+            <canvas id="incomeExpenseChart"></canvas>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="card p-3 mb-4 report-chart-card">
+            <h5>Profit / Loss</h5>
+            <canvas id="profitChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div class="col-md-6">
+          <div class="card p-3 mb-4 report-chart-card">
+            <h5>Monthly Bookings</h5>
+            <canvas id="bookingChart"></canvas>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+
+          <div class="card p-3 mb-4 report-chart-card">
+
+            <h5>Top Expenses</h5>
+
+            <canvas id="expenseChart"></canvas>
+
+            <br>
+
+            <table class="table table-bordered">
+
+              <thead>
+
+                <tr>
+                  <th>Product</th>
+                  <th>Amount</th>
+                </tr>
+
+              </thead>
+
+              <tbody id="expenseTableBody">
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
   </main>
 
+  <div id="expense-popup" class="expense-popup">
+
+    <div class="expense-card">
+
+      <h4>Add Expenditure</h4>
+
+      <form id="expense-form">
+
+        <div class="mb-3">
+          <label>Product Name</label>
+          <input type="text" id="expenseProduct" class="form-control" placeholder="Enter product name" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Price</label>
+          <input type="number" id="expensePrice" class="form-control" placeholder="Enter amount" required>
+        </div>
+
+        <div class="mb-3">
+          <label>Date</label>
+          <input type="date" id="expenseDate" class="form-control">
+        </div>
+        <div class="mb-3">
+          <label>Notes</label>
+          <textarea id="expenseNotes" class="form-control" rows="3" placeholder="Enter notes">
+    </textarea>
+        </div>
+
+
+        <div class="d-flex gap-2">
+
+          <button id="saveExpense" class="btn btn-success" type="button">
+            Save
+          </button>
+
+          <button class="btn btn-danger" type="button" id="closeExpense">
+            Cancel
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
   <!-- Document viewer modal -->
   <div class="modal fade" id="docModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -312,6 +529,9 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/config.js"></script>
   <script src="/js/app.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <script src="/js/admin.js"></script>
 </body>
 
