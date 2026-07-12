@@ -28,7 +28,8 @@ from pydantic import BaseModel, EmailStr, Field
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
 from routes import expenditure
-
+import cloudinary
+import cloudinary.uploader
 
 from utils import save_uploaded_file, generate_receipt, ALLOWED_IMG, ALLOWED_DOC
 
@@ -55,6 +56,13 @@ RECEIPTS_DIR = os.path.join(UPLOAD_DIR, "receipts")
 os.makedirs(RECEIPTS_DIR, exist_ok=True)
 
 # ---------- Single Property (from GitHub repo) ----------
+
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True,
+)
 PG_CONFIG: Dict[str, Any] = {
     "name": "SV PG for Gents",
     "tagline": "S.V PG Hostel — Gents",
@@ -572,8 +580,14 @@ async def upload_photo(file: UploadFile = File(...), user: dict = Depends(requir
     """Upload a guest photo (jpg/png/webp, max 5 MB)."""
     raw = await file.read()
     try:
-        url = save_uploaded_file(file.filename or "photo.jpg", raw, ALLOWED_IMG)
-        return {"url": url, "filename": file.filename, "size": len(raw)}
+        result = cloudinary.uploader.upload(
+    raw,
+    folder="svpg/photos"
+    )
+
+        return {
+    "url": result["secure_url"]
+    }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -583,8 +597,14 @@ async def upload_aadhaar(file: UploadFile = File(...), user: dict = Depends(requ
     """Upload Aadhaar card (jpg/png/webp/pdf, max 5 MB)."""
     raw = await file.read()
     try:
-        url = save_uploaded_file(file.filename or "aadhaar.jpg", raw, ALLOWED_DOC)
-        return {"url": url, "filename": file.filename, "size": len(raw)}
+        result = cloudinary.uploader.upload(
+            raw,
+        folder="svpg/aadhaar"
+        )
+
+        return {
+        "url": result["secure_url"]
+    }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
