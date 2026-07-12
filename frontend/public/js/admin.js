@@ -481,6 +481,8 @@ let profitChart = null;
 let incomeExpenseChart = null;
 let allExpenses = [];
 
+let editingExpenseId = null;
+
 if (saveExpenseBtn) {
   saveExpenseBtn.addEventListener("click", saveExpense);
 }
