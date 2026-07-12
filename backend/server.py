@@ -576,19 +576,28 @@ async def cancel_group(group_id: str, user: dict = Depends(require_user)) -> dic
 
 
 @app.post("/api/uploads/photo")
-async def upload_photo(file: UploadFile = File(...), user: dict = Depends(require_user)) -> dict:
-    """Upload a guest photo (jpg/png/webp, max 5 MB)."""
-    raw = await file.read()
+async def upload_photo(
+    file: UploadFile = File(...),
+    user: dict = Depends(require_user)
+):
     try:
+        raw = await file.read()
+
+        print("Filename:", file.filename)
+        print("Content-Type:", file.content_type)
+        print("Size:", len(raw))
+
         result = cloudinary.uploader.upload(
-    raw,
-    folder="svpg/photos"
-    )
+            raw,
+            folder="svpg/photos"
+        )
 
         return {
-    "url": result["secure_url"]
-    }
-    except ValueError as e:
+            "url": result["secure_url"]
+        }
+
+    except Exception as e:
+        print("UPLOAD ERROR:", str(e))
         raise HTTPException(status_code=400, detail=str(e))
 
 
