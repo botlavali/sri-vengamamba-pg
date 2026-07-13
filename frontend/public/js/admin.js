@@ -134,46 +134,149 @@ async function stats() {
 }
 
 async function residents() {
-  const host = document.getElementById('residents-grid');
-  host.innerHTML = '<div class="text-center py-4"><div class="spinner-border"></div></div>';
-  try {
-    const d = await apiFetch('/api/admin/residents');
-    if (!d.items.length) {
-      host.innerHTML = '<p class="text-center text-muted py-5">No residents yet. Once guests pay, they\'ll show up here.</p>';
-      return;
+    const host = document.getElementById("residents-grid");
+
+    host.innerHTML =
+        '<div class="text-center py-4"><div class="spinner-border"></div></div>';
+
+    try {
+
+        const d = await apiFetch("/api/admin/residents");
+
+        if (!d.items.length) {
+            host.innerHTML =
+                '<p class="text-center text-muted py-5">No residents found.</p>';
+            return;
+        }
+
+        host.innerHTML = d.items.map(r => {
+
+            const photoUrl = r.photo_url
+                ? (r.photo_url.startsWith("http")
+                    ? r.photo_url
+                    : BE + r.photo_url)
+                : "";
+
+            const aadhaarUrl = r.aadhaar_url
+                ? (r.aadhaar_url.startsWith("http")
+                    ? r.aadhaar_url
+                    : BE + r.aadhaar_url)
+                : "";
+
+            const photo = photoUrl
+                ? `
+                <img
+                    src="${photoUrl}"
+                    class="resident-photo"
+                    onclick="viewDoc('${photoUrl}','Photo - ${escapeHTML(r.name)}')"
+                    data-testid="resident-photo"
+                />
+                `
+                : `
+                <div class="resident-photo placeholder">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                `;
+
+            const aadhaarBtn = aadhaarUrl
+                ? (
+                    aadhaarUrl.toLowerCase().endsWith(".pdf")
+                        ? `
+                        <a
+                            class="btn btn-sv-outline btn-sm"
+                            href="${aadhaarUrl}"
+                            target="_blank"
+                        >
+                            <i class="bi bi-file-earmark-pdf me-1"></i>
+                            Aadhaar PDF
+                        </a>
+                        `
+                        : `
+                        <button
+                            class="btn btn-sv-outline btn-sm"
+                            onclick="viewDoc('${aadhaarUrl}','Aadhaar - ${escapeHTML(r.name)}')"
+                        >
+                            <i class="bi bi-card-image me-1"></i>
+                            Aadhaar
+                        </button>
+                        `
+                )
+                : "";
+
+            return `
+            <div class="resident-card">
+
+                ${photo}
+
+                <div class="resident-info">
+
+                    <h5>${escapeHTML(r.name)}</h5>
+
+                    <div class="resident-meta">
+
+                        <span>
+                            <i class="bi bi-telephone-fill"></i>
+                            ${escapeHTML(r.phone)}
+                            ${r.alt_phone ? " / " + escapeHTML(r.alt_phone) : ""}
+                        </span>
+
+                        <span>
+                            <i class="bi bi-envelope-fill"></i>
+                            ${escapeHTML(r.email)}
+                        </span>
+
+                        <span>
+                            <i class="bi bi-credit-card-2-front-fill"></i>
+                            ${escapeHTML(r.aadhaar_number || "-")}
+                        </span>
+
+                        <span>
+                            <i class="bi bi-calendar-event-fill"></i>
+                            Joined ${escapeHTML(r.join_date || "-")}
+                        </span>
+
+                    </div>
+
+                    <div class="resident-beds-chips">
+
+                        ${r.beds.map(b => `
+                            <span class="bed-chip">
+                                F${b.floor} · ${escapeHTML(b.room)} · Bed ${b.bed} · ${b.sharing}-share
+                            </span>
+                        `).join("")}
+
+                        <span class="bed-chip" style="background:var(--accent);color:#fff">
+                            ${fmtINR(r.monthly_rent)}/mo
+                        </span>
+
+                    </div>
+
+                    <div class="resident-actions">
+
+                        ${aadhaarBtn}
+
+                        <button
+                            class="btn btn-outline-danger btn-sm"
+                            onclick="checkOut('${r.booking_group_id}','${escapeHTML(r.name)}')">
+                            <i class="bi bi-box-arrow-right me-1"></i>
+                            Check Out
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+            `;
+
+        }).join("");
+
+    } catch (e) {
+
+        toast(e.message, "error");
+        console.error(e);
+
     }
-    host.innerHTML = d.items.map(r => {
-      const photo = r.photo_url
-        ? `<img src="${BE}${escapeHTML(r.photo_url)}" class="resident-photo" onclick="viewDoc('${BE}${escapeHTML(r.photo_url)}','Photo – ${escapeHTML(r.name)}')" data-testid="resident-photo"/>`
-        : `<div class="resident-photo placeholder"><i class="bi bi-person-fill"></i></div>`;
-      const aadhaarBtn = r.aadhaar_url
-        ? (r.aadhaar_url.toLowerCase().endsWith('.pdf')
-          ? `<a class="btn btn-sv-outline btn-sm" href="${BE}${escapeHTML(r.aadhaar_url)}" target="_blank" data-testid="resident-aadhaar-pdf"><i class="bi bi-file-earmark-pdf me-1"></i>Aadhaar PDF</a>`
-          : `<button class="btn btn-sv-outline btn-sm" onclick="viewDoc('${BE}${escapeHTML(r.aadhaar_url)}','Aadhaar – ${escapeHTML(r.name)}')" data-testid="resident-aadhaar-btn"><i class="bi bi-card-image me-1"></i>Aadhaar</button>`)
-        : '';
-      return `
-        <div class="resident-card" data-testid="resident-card">
-          ${photo}
-          <div class="resident-info">
-            <h5>${escapeHTML(r.name)}</h5>
-            <div class="resident-meta">
-              <span><i class="bi bi-telephone-fill"></i>${escapeHTML(r.phone)}${r.alt_phone ? ` / ${escapeHTML(r.alt_phone)}` : ''}</span>
-              <span><i class="bi bi-envelope-fill"></i>${escapeHTML(r.email)}</span>
-              <span><i class="bi bi-credit-card-2-front-fill"></i>${escapeHTML(r.aadhaar_number || '—')}</span>
-              <span><i class="bi bi-calendar-event-fill"></i>Joined ${escapeHTML(r.join_date || '-')}</span>
-            </div>
-            <div class="resident-beds-chips">
-              ${r.beds.map(b => `<span class="bed-chip">F${b.floor} · ${escapeHTML(b.room)} · Bed ${b.bed} · ${b.sharing}-share</span>`).join('')}
-              <span class="bed-chip" style="background:var(--accent);color:#fff">${fmtINR(r.monthly_rent)}/mo</span>
-            </div>
-            <div class="resident-actions">
-              ${aadhaarBtn}
-              <button class="btn btn-outline-danger btn-sm" onclick="checkOut('${r.booking_group_id}','${escapeHTML(r.name)}')" data-testid="checkout-btn"><i class="bi bi-box-arrow-right me-1"></i>Check Out</button>
-            </div>
-          </div>
-        </div>`;
-    }).join('');
-  } catch (e) { toast(e.message, 'error'); }
 }
 
 async function rentMatrix() {
@@ -272,16 +375,44 @@ async function checkOut(gid, name) {
 }
 
 async function bks() {
+
   const host = document.getElementById('a-bks');
   host.innerHTML = '<div class="text-center py-4"><div class="spinner-border"></div></div>';
   try {
     const d = await apiFetch('/api/admin/bookings');
     host.innerHTML = '<div class="table-responsive"><table class="table align-middle" style="background:var(--surface);border-radius:14px;overflow:hidden"><thead><tr><th>Created</th><th>Guest</th><th>Bed</th><th>Sharing</th><th>Rent</th><th>Docs</th><th>Status</th><th>Payment</th></tr></thead><tbody>' +
       d.items.map(b => {
-        const photo = b.photo_url ? `<img src="${BE}${escapeHTML(b.photo_url)}" class="doc-thumb me-1" onclick="viewDoc('${BE}${escapeHTML(b.photo_url)}','Photo')" data-testid="view-photo-btn"/>` : '<span class="text-muted small">—</span>';
-        const aad = b.aadhaar_url ? (b.aadhaar_url.toLowerCase().endsWith('.pdf')
-          ? `<a href="${BE}${escapeHTML(b.aadhaar_url)}" target="_blank" class="btn btn-sm btn-sv-outline"><i class="bi bi-file-earmark-pdf"></i></a>`
-          : `<img src="${BE}${escapeHTML(b.aadhaar_url)}" class="doc-thumb" onclick="viewDoc('${BE}${escapeHTML(b.aadhaar_url)}','Aadhaar')" data-testid="view-aadhaar-btn"/>`) : '';
+        const photoUrl = b.photo_url
+    ? (b.photo_url.startsWith("http")
+        ? b.photo_url
+        : BE + b.photo_url)
+    : "";
+console.log("PHOTO URL =", b.photo_url);
+const photo = photoUrl
+    ? `<img
+          src="${photoUrl}"
+          class="doc-thumb me-1"
+          onclick="viewDoc('${photoUrl}','Photo')"
+       />`
+    : '<span class="text-muted small">—</span>';
+        const aadhaarUrl = b.aadhaar_url
+    ? (b.aadhaar_url.startsWith("http")
+        ? b.aadhaar_url
+        : BE + b.aadhaar_url)
+    : "";
+
+const aad = aadhaarUrl
+    ? (aadhaarUrl.toLowerCase().endsWith(".pdf")
+        ? `<a href="${aadhaarUrl}" target="_blank"
+             class="btn btn-sm btn-sv-outline">
+             <i class="bi bi-file-earmark-pdf"></i>
+           </a>`
+        : `<img
+             src="${aadhaarUrl}"
+             class="doc-thumb"
+             onclick="viewDoc('${aadhaarUrl}','Aadhaar')"
+           />`)
+    : "";
         return `<tr>
           <td><small>${(b.created_at || '').slice(0, 10)}</small></td>
           <td>${escapeHTML(b.name)}<br/><small class="text-muted">${escapeHTML(b.phone)}</small></td>
