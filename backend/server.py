@@ -63,9 +63,9 @@ cloudinary.config(
     api_secret=os.getenv("CLOUDINARY_API_SECRET"),
     secure=True,
 )
-print("Cloud Name:", os.getenv("CLOUDINARY_CLOUD_NAME"))
-print("API Key:", os.getenv("CLOUDINARY_API_KEY"))
-print("API Secret Exists:", bool(os.getenv("CLOUDINARY_API_SECRET")))
+print("Cloud Name =", repr(os.environ.get("CLOUDINARY_CLOUD_NAME")))
+print("API Key =", repr(os.environ.get("CLOUDINARY_API_KEY")))
+print("API Secret =", repr(os.environ.get("CLOUDINARY_API_SECRET")))
 PG_CONFIG: Dict[str, Any] = {
     "name": "SV PG for Gents",
     "tagline": "S.V PG Hostel — Gents",
@@ -240,7 +240,7 @@ class BedSel(BaseModel):
 
 class BookingCreateReq(BaseModel):
     beds: List[BedSel]
-    name: str = Field(min_length=2)
+    name: str = Field(min_length=1)
     phone: str = Field(min_length=10)
     alt_phone: str = Field(min_length=10)
     email: EmailStr
