@@ -84,7 +84,7 @@ loaders.reminders = reminders;
 loaders.webhooks = hooks;
 loaders.expenditure = loadExpensePage;
 async function loadExpensePage() {
-  console.log("Expense page opened");
+
 
   await loadDashboardTotals();
 
@@ -387,7 +387,7 @@ async function bks() {
         ? b.photo_url
         : BE + b.photo_url)
     : "";
-console.log("PHOTO URL =", b.photo_url);
+
 const photo = photoUrl
     ? `<img
           src="${photoUrl}"
